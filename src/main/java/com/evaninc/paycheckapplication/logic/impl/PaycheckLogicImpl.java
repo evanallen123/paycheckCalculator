@@ -122,11 +122,13 @@ public class PaycheckLogicImpl implements PaycheckLogic
         final BigDecimal INCOME_TAX_RATE = BigDecimal.valueOf(FEDERAL_TAX_RATE + STATE_TAX_RATE);
         final BigDecimal HUNDRED = BigDecimal.valueOf(100);
 
-        BigDecimal socialSecurityTax = grossPaycheck.subtract(
-                grossPaycheck.divide(BigDecimal.valueOf(100), RoundingMode.HALF_DOWN)
-                .multiply(BigDecimal.valueOf(SOCIAL_SECURITY_TAX_RATE))
-        );
-        BigDecimal afterSocialSecurity = grossPaycheck.subtract(socialSecurityTax);
+        BigDecimal socialSecurityTax = grossPaycheck
+                .divide(BigDecimal.valueOf(100), RoundingMode.HALF_DOWN)
+                .multiply(BigDecimal.valueOf(SOCIAL_SECURITY_TAX_RATE));
+        BigDecimal afterSocialSecurity = grossPaycheck
+                .subtract(socialSecurityTax);
+
+
         return (afterSocialSecurity.divide(HUNDRED, RoundingMode.HALF_DOWN).multiply(INCOME_TAX_RATE)).add(socialSecurityTax);
 
     }
