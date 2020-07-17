@@ -6,9 +6,9 @@ import org.springframework.stereotype.Controller;
 
 @Controller
 @SpringBootApplication
-public class DemoApplication {
+public class PaycheckApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(DemoApplication.class, args);
+		SpringApplication.run(PaycheckApplication.class, args);
 	}
 }

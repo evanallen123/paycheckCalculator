@@ -2,6 +2,7 @@ package com.evaninc.paycheckapplication.logic;
 
 import com.evaninc.paycheckapplication.dataobject.Paycheck;
 
+import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
 
 public interface PaycheckLogic {
@@ -12,7 +13,7 @@ public interface PaycheckLogic {
      * @param hours the amount of hours worked in that pay period
      * @returns the paycheck object which contains the net paycheck amount
      */
-    Paycheck calculateHourlyPaycheck(BigDecimal hourlyPay, BigDecimal hours);
+    Paycheck calculateHourlyPaycheck(BigDecimal hourlyPay, BigDecimal hours, HttpServletRequest request);
 
     /*
      * Calculate the paycheck of a salary based job
@@ -20,6 +21,6 @@ public interface PaycheckLogic {
      * @param the amount of money being paid per year
      * @returns the paycheck object which contains the net paycheck amount
      */
-    Paycheck calculateSalaryPaycheck(BigDecimal salaryPay);
+    Paycheck calculateSalaryPaycheck(BigDecimal salaryPay, HttpServletRequest request);
 }
 

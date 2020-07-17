@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
 
 @RestController
@@ -18,15 +19,17 @@ public class PaycheckServer {
 
     @GetMapping(baseCalculateMapping + "/hourly")
     public Paycheck calculateHourly(@RequestParam BigDecimal hourlyPay,
-                                    @RequestParam BigDecimal hours)
+                                    @RequestParam BigDecimal hours,
+                                    HttpServletRequest request)
     {
-        return paycheckLogic.calculateHourlyPaycheck(hourlyPay, hours);
+        return paycheckLogic.calculateHourlyPaycheck(hourlyPay, hours, request);
     }
 
     @GetMapping(baseCalculateMapping + "/salary")
-    public Paycheck calculateSalary(@RequestParam BigDecimal salaryPay)
+    public Paycheck calculateSalary(@RequestParam BigDecimal salaryPay,
+                                    HttpServletRequest request)
     {
-        return paycheckLogic.calculateSalaryPaycheck(salaryPay);
+        return paycheckLogic.calculateSalaryPaycheck(salaryPay, request);
     }
 
 }
