@@ -1,4 +1,4 @@
-package com.evaninc.dataobject;
+package com.evaninc.paycheckapplication.dataobject;
 
 import java.math.BigDecimal;
 
