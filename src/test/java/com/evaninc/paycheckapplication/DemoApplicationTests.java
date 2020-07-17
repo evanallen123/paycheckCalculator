@@ -1,4 +1,4 @@
-package com.example.paycheckapplication;
+package com.evaninc.paycheckapplication;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

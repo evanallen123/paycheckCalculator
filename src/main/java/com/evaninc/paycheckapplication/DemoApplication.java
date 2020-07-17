@@ -1,4 +1,4 @@
-package com.example.paycheckapplication;
+package com.evaninc.paycheckapplication;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
