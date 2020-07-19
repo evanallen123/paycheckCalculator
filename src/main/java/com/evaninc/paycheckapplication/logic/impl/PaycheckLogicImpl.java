@@ -28,11 +28,11 @@ public class PaycheckLogicImpl implements PaycheckLogic
     {
         String state = getStateByIp(request.getRemoteAddr());
         log.info("the location of the ip is: {}", state);
-        BigDecimal grossPaycheck = hourlyPay.multiply(hours);
+        BigDecimal grossPaycheck = hourlyPay.multiply(hours).setScale(2, RoundingMode.UP);
         log.info("Gross Paycheck: {}", grossPaycheck);
-        BigDecimal netTaxAmount = getTaxedAmount(grossPaycheck, state);
+        BigDecimal netTaxAmount = getTaxedAmount(grossPaycheck, state).setScale(2, RoundingMode.UP);
         log.info("Net tax amount: {}", netTaxAmount);
-        BigDecimal netPaycheck = grossPaycheck.subtract(netTaxAmount);
+        BigDecimal netPaycheck = grossPaycheck.subtract(netTaxAmount).setScale(2, RoundingMode.UP);
         log.info("Net paycheck: {}", netPaycheck);
         log.info("returning new paycheck...");
         return new Paycheck(
@@ -50,10 +50,15 @@ public class PaycheckLogicImpl implements PaycheckLogic
     public Paycheck calculateSalaryPaycheck(BigDecimal salaryPay, HttpServletRequest request)
     {
         String state = getStateByIp(request.getRemoteAddr());
+        log.info("the location of the ip is: {}", state);
         BigDecimal grossPaycheck = salaryPay.divide(biWeeklyPayPeriodsPerYear, RoundingMode.UP);
+        log.info("Gross Paycheck: {}", grossPaycheck);
         BigDecimal netTaxAmount = getTaxedAmount(grossPaycheck, state).setScale(2, RoundingMode.UP);
+        log.info("Net tax amount: {}", netTaxAmount);
         BigDecimal netPaycheck = grossPaycheck.subtract(netTaxAmount).setScale(2, RoundingMode.UP);
         BigDecimal hourlyPay = grossPaycheck.divide(biWeeklyHoursPerPayPeriod, RoundingMode.UP).setScale(2, RoundingMode.UP);
+        log.info("Net paycheck: {}, hourlyPay: {}", netPaycheck, hourlyPay);
+        log.info("returning new paycheck...");
         return new Paycheck(
                 hourlyPay,
                 biWeeklyHoursPerPayPeriod,
