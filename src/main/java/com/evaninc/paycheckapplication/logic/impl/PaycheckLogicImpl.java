@@ -50,10 +50,10 @@ public class PaycheckLogicImpl implements PaycheckLogic
     public Paycheck calculateSalaryPaycheck(BigDecimal salaryPay, HttpServletRequest request)
     {
         String state = getStateByIp(request.getRemoteAddr());
-        BigDecimal grossPaycheck = salaryPay.divide(biWeeklyPayPeriodsPerYear, RoundingMode.HALF_DOWN);
-        BigDecimal netTaxAmount = getTaxedAmount(grossPaycheck, state);
-        BigDecimal netPaycheck = grossPaycheck.subtract(netTaxAmount);
-        BigDecimal hourlyPay = grossPaycheck.divide(biWeeklyHoursPerPayPeriod, RoundingMode.HALF_DOWN);
+        BigDecimal grossPaycheck = salaryPay.divide(biWeeklyPayPeriodsPerYear, RoundingMode.UP);
+        BigDecimal netTaxAmount = getTaxedAmount(grossPaycheck, state).setScale(2, RoundingMode.UP);
+        BigDecimal netPaycheck = grossPaycheck.subtract(netTaxAmount).setScale(2, RoundingMode.UP);
+        BigDecimal hourlyPay = grossPaycheck.divide(biWeeklyHoursPerPayPeriod, RoundingMode.UP).setScale(2, RoundingMode.UP);
         return new Paycheck(
                 hourlyPay,
                 biWeeklyHoursPerPayPeriod,
@@ -135,16 +135,16 @@ public class PaycheckLogicImpl implements PaycheckLogic
         final BigDecimal HUNDRED = BigDecimal.valueOf(100);
 
         BigDecimal socialSecurityTax = grossPaycheck
-                .divide(BigDecimal.valueOf(100), RoundingMode.HALF_DOWN)
+                .divide(BigDecimal.valueOf(100), RoundingMode.UP)
                 .multiply(BigDecimal.valueOf(SOCIAL_SECURITY_TAX_RATE));
         log.info("social security tax amount: {}", socialSecurityTax);
         BigDecimal afterSocialSecurity = grossPaycheck
                 .subtract(socialSecurityTax);
         log.info("paycheck after social security: {}", afterSocialSecurity);
 
-        BigDecimal totalTaxedAmount = (afterSocialSecurity.divide(HUNDRED, RoundingMode.HALF_DOWN).multiply(INCOME_TAX_RATE)).add(socialSecurityTax);
+        BigDecimal totalTaxedAmount = (afterSocialSecurity.divide(HUNDRED, RoundingMode.UP).multiply(INCOME_TAX_RATE)).add(socialSecurityTax);
         log.info("total taxed amount: {}", totalTaxedAmount);
-        return totalTaxedAmount.setScale(2, RoundingMode.HALF_DOWN);
+        return totalTaxedAmount.setScale(2, RoundingMode.UP);
 
     }
 }
