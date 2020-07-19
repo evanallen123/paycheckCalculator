@@ -1,6 +1,5 @@
 package com.evaninc.paycheckapplication.dataobject.taxee;
 
-import com.evaninc.paycheckapplication.constants.Status;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
@@ -17,16 +16,15 @@ public class TaxeeResponse {
     FilingStatus headOfHousehold;
 
     public FilingStatus getFilingStatus(String filingStatus) {
-        Status status = Status.valueOf(filingStatus);
-        switch(status)
+        switch(filingStatus)
         {
-            case SINGLE:
+            case "single":
                 return single;
-            case MARRIED:
+            case "married":
                 return married;
-            case MARRIED_SEPARATELY:
+            case "married_separately":
                 return marriedSeparately;
-            case HEAD_OF_HOUSEHOLD:
+            case "head_of_household":
                 return headOfHousehold;
         }
         return null;
