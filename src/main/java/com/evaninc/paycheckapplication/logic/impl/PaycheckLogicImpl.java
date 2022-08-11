@@ -2,18 +2,14 @@ package com.evaninc.paycheckapplication.logic.impl;
 
 import com.evaninc.paycheckapplication.dataobject.IpApiResponse;
 import com.evaninc.paycheckapplication.dataobject.Paycheck;
-import com.evaninc.paycheckapplication.dataobject.taxee.TaxeeResponse;
 import com.evaninc.paycheckapplication.logic.PaycheckLogic;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.*;
 import org.springframework.web.client.RestTemplate;
 
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
-import java.util.Collections;
-import java.util.Objects;
 
 @Slf4j
 public class PaycheckLogicImpl implements PaycheckLogic
@@ -30,6 +26,7 @@ public class PaycheckLogicImpl implements PaycheckLogic
         log.info("the location of the ip is: {}", state);
         BigDecimal grossPaycheck = hourlyPay.multiply(hours).setScale(2, RoundingMode.UP);
         log.info("Gross Paycheck: {}", grossPaycheck);
+        BigDecimal grossSalary = grossPaycheck.multiply(biWeeklyPayPeriodsPerYear);
         BigDecimal netTaxAmount = getTaxedAmount(grossPaycheck, state).setScale(2, RoundingMode.UP);
         log.info("Net tax amount: {}", netTaxAmount);
         BigDecimal netPaycheck = grossPaycheck.subtract(netTaxAmount).setScale(2, RoundingMode.UP);
@@ -38,7 +35,7 @@ public class PaycheckLogicImpl implements PaycheckLogic
         return new Paycheck(
                 hourlyPay,
                 hours,
-                grossPaycheck.multiply(biWeeklyPayPeriodsPerYear),
+                grossSalary,
                 grossPaycheck,
                 netPaycheck,
                 netTaxAmount,
@@ -93,47 +90,62 @@ public class PaycheckLogicImpl implements PaycheckLogic
         }
     }
 
-    private double getStateTax(String state)
+    private double getStateTax(String state, BigDecimal grossSalary)
     {
-        String filingStatus = "single";
-        try
-        {
-            final String uri = "https://taxee.io/api/v2/state/2020/" + state;
-            RestTemplate template = new RestTemplate();
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_JSON);
-            headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
-            headers.set("Authorization", "Bearer " +
-                    "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJBU" +
-                    "ElfS0VZX01BTkFHRVIiLCJodHRwOi8vdGF4ZWUuaW8vdXNlcl9" +
-                    "pZCI6IjVmMGM4ZGFhMzkyZWQyNTNlZjA3MjUzZSIsImh0dHA6L" +
-                    "y90YXhlZS5pby9zY29wZXMiOlsiYXBpIl0sImlhdCI6MTU5NDY" +
-                    "1ODIxOH0.h5S2jd59HdrvC246hROwQCkzGS7JvBmaI1A3xBhsWyc");
-            final HttpEntity<?> request = new HttpEntity<>(headers);
-            ResponseEntity<TaxeeResponse> response = template.exchange(
-                    uri,
-                    HttpMethod.GET,
-                    request,
-                    TaxeeResponse.class
-            );
-            if (response.getStatusCode() == HttpStatus.OK)
-            {
-                double stateTax = Objects.requireNonNull(response.getBody()).getFilingStatus(filingStatus).getTaxBrackets().get(0).getMarginalRate();
-                log.info("State: {}, State tax: {}", state, stateTax);
-                return stateTax;
-            }
-        }
-        catch (Exception ex)
-        {
-            ex.printStackTrace();
-        }
-        return -1;
+        return 0.099;
+//        String filingStatus = "single";
+//        if (!StringUtils.isEmpty(state))
+//        {
+//            try
+//            {
+//                final String uri = "https://taxee.io/api/v2/state/2022/" + state;
+//                RestTemplate template = new RestTemplate();
+//                HttpHeaders headers = new HttpHeaders();
+//                headers.setContentType(MediaType.APPLICATION_JSON);
+//                headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+//                headers.set("Authorization", "Bearer " +
+//                        "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJBU" +
+//                        "ElfS0VZX01BTkFHRVIiLCJodHRwOi8vdGF4ZWUuaW8vdXNlcl9" +
+//                        "pZCI6IjVmMGM4ZGFhMzkyZWQyNTNlZjA3MjUzZSIsImh0dHA6L" +
+//                        "y90YXhlZS5pby9zY29wZXMiOlsiYXBpIl0sImlhdCI6MTU5NDY" +
+//                        "1ODIxOH0.h5S2jd59HdrvC246hROwQCkzGS7JvBmaI1A3xBhsWyc");
+//                final HttpEntity<?> request = new HttpEntity<>(headers);
+//                ResponseEntity<TaxeeResponse> response = template.exchange(
+//                        uri,
+//                        HttpMethod.GET,
+//                        request,
+//                        TaxeeResponse.class
+//                );
+//                if (response.getStatusCode() == HttpStatus.OK)
+//                {
+//                    double stateTax = Objects.requireNonNull(response.getBody()).getFilingStatus(filingStatus).getTaxBrackets().get(0).getMarginalRate();
+//                    log.info("State: {}, State tax: {}", state, stateTax);
+//                    return stateTax;
+//                }
+//            }
+//            catch (Exception ex)
+//            {
+//                ex.printStackTrace();
+//            }
+//        }
+//        else
+//        {
+//            log.warn("Cannot calculate state tax, state is null. Defaulting to average state tax");
+//        }
+//        return -1;
     }
+
+//    private IncomeTaxBracket getTaxBracket(List<IncomeTaxBracket> brackets, BigDecimal grossSalary)
+//    {
+//        for (IncomeTaxBracket bracket : brackets)
+//        {
+//        }
+//    }
 
     private BigDecimal getTaxedAmount(BigDecimal grossPaycheck, String state)
     {
         final double FEDERAL_TAX_RATE = 10.54;
-        final double STATE_TAX_RATE = getStateTax(state);
+        final double STATE_TAX_RATE = getStateTax(state, grossPaycheck);
         final double SOCIAL_SECURITY_TAX_RATE = 7.65;
         final BigDecimal INCOME_TAX_RATE = BigDecimal.valueOf(FEDERAL_TAX_RATE + STATE_TAX_RATE);
         log.info("total tax rate: {}", INCOME_TAX_RATE);
