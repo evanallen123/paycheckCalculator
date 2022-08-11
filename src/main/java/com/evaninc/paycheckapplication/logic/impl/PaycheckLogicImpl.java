@@ -93,46 +93,6 @@ public class PaycheckLogicImpl implements PaycheckLogic
     private double getStateTax(String state, BigDecimal grossSalary)
     {
         return 0.099;
-//        String filingStatus = "single";
-//        if (!StringUtils.isEmpty(state))
-//        {
-//            try
-//            {
-//                final String uri = "https://taxee.io/api/v2/state/2022/" + state;
-//                RestTemplate template = new RestTemplate();
-//                HttpHeaders headers = new HttpHeaders();
-//                headers.setContentType(MediaType.APPLICATION_JSON);
-//                headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
-//                headers.set("Authorization", "Bearer " +
-//                        "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJBU" +
-//                        "ElfS0VZX01BTkFHRVIiLCJodHRwOi8vdGF4ZWUuaW8vdXNlcl9" +
-//                        "pZCI6IjVmMGM4ZGFhMzkyZWQyNTNlZjA3MjUzZSIsImh0dHA6L" +
-//                        "y90YXhlZS5pby9zY29wZXMiOlsiYXBpIl0sImlhdCI6MTU5NDY" +
-//                        "1ODIxOH0.h5S2jd59HdrvC246hROwQCkzGS7JvBmaI1A3xBhsWyc");
-//                final HttpEntity<?> request = new HttpEntity<>(headers);
-//                ResponseEntity<TaxeeResponse> response = template.exchange(
-//                        uri,
-//                        HttpMethod.GET,
-//                        request,
-//                        TaxeeResponse.class
-//                );
-//                if (response.getStatusCode() == HttpStatus.OK)
-//                {
-//                    double stateTax = Objects.requireNonNull(response.getBody()).getFilingStatus(filingStatus).getTaxBrackets().get(0).getMarginalRate();
-//                    log.info("State: {}, State tax: {}", state, stateTax);
-//                    return stateTax;
-//                }
-//            }
-//            catch (Exception ex)
-//            {
-//                ex.printStackTrace();
-//            }
-//        }
-//        else
-//        {
-//            log.warn("Cannot calculate state tax, state is null. Defaulting to average state tax");
-//        }
-//        return -1;
     }
 
 //    private IncomeTaxBracket getTaxBracket(List<IncomeTaxBracket> brackets, BigDecimal grossSalary)
